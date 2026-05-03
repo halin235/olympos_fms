@@ -25,6 +25,8 @@ export const STAFF_CONTRACT_RECORDS = [
     plateNumber: DEMO_PLATE_SPARK,
     periodLabel: '2026.05.02 10:18 ~ 2026.05.03 10:18',
     eSignStatus: 'pending_signature',
+    deploymentContractStatus: 'active',
+    returnBranchName: '서울역점',
   },
   {
     id: 'ctr-2',
@@ -32,11 +34,10 @@ export const STAFF_CONTRACT_RECORDS = [
     contractNo: HONG_GILDONG_RENTAL.contractNo,
     customerName: HONG_GILDONG_RENTAL.customerName,
     vehicleModel: HONG_GILDONG_RENTAL.vehicleModel,
-    vehicleListTitle: HONG_GILDONG_RENTAL.vehicleListTitle,
     plateNumber: HONG_GILDONG_RENTAL.plateNumber,
     powertrain: HONG_GILDONG_RENTAL.powertrain,
-    dropoffBranchLabel: HONG_GILDONG_RENTAL.dropoffBranchLabel,
-    returnCompletedBranchLabel: HONG_GILDONG_RENTAL.returnCompletedBranchLabel,
+    deploymentContractStatus: 'active',
+    returnBranchName: HONG_GILDONG_RENTAL.returnBranchName,
     periodLabel: getHongGilDongPeriodLabelKo(),
     eSignStatus: 'signed',
   },
@@ -49,6 +50,8 @@ export const STAFF_CONTRACT_RECORDS = [
     plateNumber: DEMO_PLATE_SONATA,
     periodLabel: '2026.05.02 08:00 ~ 2026.05.03 14:30',
     eSignStatus: 'pending_signature',
+    deploymentContractStatus: 'active',
+    returnBranchName: '강남역점',
   },
   {
     id: 'ctr-4',
@@ -59,6 +62,8 @@ export const STAFF_CONTRACT_RECORDS = [
     plateNumber: DEMO_PLATE_K5,
     periodLabel: '2026.05.01 09:00 ~ 2026.05.02 18:00',
     eSignStatus: 'sent_insurer',
+    deploymentContractStatus: 'returned',
+    returnBranchName: '수원역점',
   },
   {
     id: 'ctr-5',
@@ -69,6 +74,8 @@ export const STAFF_CONTRACT_RECORDS = [
     plateNumber: DEMO_PLATE_GRANDEUR,
     periodLabel: '2026.05.03 11:00 ~ 2026.05.05 19:00',
     eSignStatus: 'signed',
+    deploymentContractStatus: 'returned',
+    returnBranchName: '서초점',
   },
 ];
 

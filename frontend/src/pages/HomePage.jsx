@@ -9,14 +9,16 @@
 
 import { useMemo, useState } from 'react';
 import { EvLightningIcon } from '../components/EvLightningIcon';
+import ActiveNotReturnedBadge from '../components/ActiveNotReturnedBadge';
 import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
 import { DEMO_DATE } from '../constants/demoTimeline';
+import { formatBranchStatusChip } from '../utils/formatBranchStatusChip';
 
 // ─────────────────────────────────────────────────────────────
 // Mock 데이터
 // ─────────────────────────────────────────────────────────────
 const KPI = {
-  unreturned:  1,   // 미반납 차량 (스파크)
+  unreturned:  1,   // 미반납 차량 (연체 플래그 스파크 — 긴급 칩 연동)
   fuelDeficit: 1,   // 연료 부족 정산 (쏘나타)
   todayReturn: 2,   // 오늘 반납 예정 (테슬라 모델 3 · 쏘나타, 26.05.03)
 };
@@ -283,23 +285,14 @@ function DeploymentSection({ onDetailClick }) {
 // ─────────────────────────────────────────────────────────────
 function DeploymentItem({ data, onClick }) {
   const {
-    employee, contractNo, contractStatus, settlementStatus,
-    vehicleModel, vehicleListTitle, plateNumber, startAt, endAt, customerName, fuelPct,
-    overdueReturn,
+    employee, contractStatus, settlementStatus,
+    vehicleModel, plateNumber, startAt, endAt, customerName, fuelPct,
     powertrain,
-    dropoffBranchLabel,
-    returnCompletedBranchLabel,
+    returnBranchName,
   } = data;
 
   const isEv = powertrain === 'ev';
-  const vehicleHeadline = vehicleListTitle ?? vehicleModel;
-
-  // 계약 상태 배지
-  const statusBadge = {
-    active:   { label: '운행중',  cls: 'bg-olympos-blue text-white'            },
-    returned: { label: '반납완료', cls: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
-    settled:  { label: '정산완료', cls: 'bg-green-100  text-green-700  border border-green-200'  },
-  }[contractStatus] ?? { label: contractStatus, cls: 'bg-gray-100 text-gray-600' };
+  const branchChipText = formatBranchStatusChip(contractStatus, returnBranchName);
 
   // 연료 / 배터리 SOC 색상·라벨
   const fuelColor = fuelPct >= 60 ? '#10B981' : fuelPct >= 30 ? '#F59E0B' : '#EF4444';
@@ -314,75 +307,59 @@ function DeploymentItem({ data, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left px-3 py-1.5 hover:bg-gray-50 transition-colors group"
+      className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors group"
     >
-      <div className="min-w-0">
-        {/* 차종 — 리스트 최상단 */}
-        <div className="flex items-start gap-1 mb-0.5">
+      <div className="min-w-0 space-y-1">
+        {/* 차종 */}
+        <div className="flex items-start gap-1 leading-snug">
           {isEv ? (
             <EvLightningIcon className="w-3 h-3 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden />
           ) : null}
-          <span className="text-[11px] font-bold text-gray-900 leading-snug">{vehicleHeadline}</span>
+          <span className="text-[11px] font-bold text-gray-900">{vehicleModel}</span>
         </div>
 
-        {/* 번호판 · 상태 */}
-        <div className="flex items-center justify-between gap-2 mb-0.5">
-          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            <span
-              className="text-[10px] font-semibold text-gray-800 font-mono tabular-nums tracking-tight whitespace-nowrap"
-              title={plateNumber}
-            >
-              {plateNumber}
-            </span>
-            <span className={`badge text-[9px] px-1.5 py-0.5 ${statusBadge.cls}`}>
-              {statusBadge.label}
-            </span>
+        {/* 번호판 */}
+        <div className="text-[10px] font-semibold text-gray-800 font-mono tabular-nums tracking-tight">
+          {plateNumber}
+        </div>
+
+        {/* 반납 지점·계약 상태 통합 칩 + 부가 알림 */}
+        <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
+          <div className="flex flex-wrap items-center gap-1 min-w-0">
+            {branchChipText ? (
+              <span
+                className="inline-flex max-w-full items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[9px] font-bold text-slate-800 tracking-tight break-words leading-snug"
+                title={branchChipText}
+              >
+                {branchChipText}
+              </span>
+            ) : null}
+            {contractStatus === 'active' ? <ActiveNotReturnedBadge /> : null}
             {contractStatus === 'returned' &&
               (settlementStatus === 'pending' || settlementStatus === 'pending_review') && (
-              <span className="text-[9px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-1.5 py-0">
+              <span className="text-[9px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-1.5 py-0.5">
                 정산 대기
               </span>
             )}
-            {contractStatus === 'returned' && returnCompletedBranchLabel && (
-              <span className="text-[9px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-1.5 py-0">
-                {returnCompletedBranchLabel}
-              </span>
-            )}
-            {contractStatus === 'active' && overdueReturn && (
-              <span className="text-[9px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full px-1.5 py-0">
-                미반납
-              </span>
-            )}
           </div>
-          {isReviewPending && (
+          {isReviewPending ? (
             <span className="flex-shrink-0 flex items-center gap-1 bg-orange-500 text-white
                              text-[9px] font-bold rounded-full px-2 py-0.5 leading-none shadow-sm">
               <span className="w-1 h-1 rounded-full bg-white animate-pulse inline-block" />
               검토 필요
             </span>
-          )}
+          ) : null}
         </div>
 
         {/* 고객명 + 담당자 + 기간 */}
-        <div className="flex items-center gap-1.5 mb-0.5 text-[10px]">
+        <div className="flex items-center gap-1.5 pt-0.5 text-[10px] leading-snug border-t border-gray-50/90">
           <span className="text-gray-700 font-medium truncate">{customerName}</span>
           <span className="text-gray-300 flex-shrink-0">·</span>
           <span className="text-gray-500 flex-shrink-0">{employee}</span>
-          <span className="ml-auto text-gray-400 font-mono tabular-nums whitespace-nowrap">{startAt} → {endAt}</span>
+          <span className="ml-auto text-gray-400 font-mono tabular-nums whitespace-nowrap text-[9px]">{startAt} → {endAt}</span>
         </div>
 
-        {contractStatus === 'active' && dropoffBranchLabel && (
-          <div className="flex items-center gap-1 mb-0.5 text-[9px] text-slate-600 font-semibold">
-            <span aria-hidden className="text-[10px]">
-              📍
-            </span>
-            <span>
-              반납 예정 : {dropoffBranchLabel}
-            </span>
-          </div>
-        )}
-
-        <div className="flex items-center justify-between gap-2 mt-0.5 mb-px">
+        <div className="flex items-center justify-between gap-2 pt-0.5 mb-px">
           <span className="text-[9px] text-gray-500 font-semibold tracking-tight">
             {isEv ? '배터리 잔량' : '잔여 연료'}
           </span>

@@ -29,6 +29,7 @@ export const ALL_DEPLOYMENTS = [
     powertrain: 'ice',
     overdueReturn: true,
     createdOrder: 5,
+    returnBranchName: '서울역점',
   },
   {
     id: HONG_GILDONG_RENTAL.deploymentId,
@@ -37,7 +38,6 @@ export const ALL_DEPLOYMENTS = [
     contractStatus: 'active',
     settlementStatus: null,
     vehicleModel: HONG_GILDONG_RENTAL.vehicleModel,
-    vehicleListTitle: HONG_GILDONG_RENTAL.vehicleListTitle,
     plateNumber: HONG_GILDONG_RENTAL.plateNumber,
     startAt: HONG_GILDONG_RENTAL.startAt,
     endAt: HONG_GILDONG_RENTAL.endAt,
@@ -46,8 +46,7 @@ export const ALL_DEPLOYMENTS = [
     contractWritingStatus: 'in_progress',
     fuelPct: HONG_GILDONG_RENTAL.energyPct,
     powertrain: HONG_GILDONG_RENTAL.powertrain,
-    dropoffBranchLabel: HONG_GILDONG_RENTAL.dropoffBranchLabel,
-    returnCompletedBranchLabel: HONG_GILDONG_RENTAL.returnCompletedBranchLabel,
+    returnBranchName: HONG_GILDONG_RENTAL.returnBranchName,
     overdueReturn: false,
     createdOrder: 4,
   },
@@ -68,6 +67,7 @@ export const ALL_DEPLOYMENTS = [
     powertrain: 'ice',
     overdueReturn: false,
     createdOrder: 3,
+    returnBranchName: '강남역점',
   },
   {
     id: 'c004',
@@ -86,6 +86,7 @@ export const ALL_DEPLOYMENTS = [
     powertrain: 'ice',
     overdueReturn: false,
     createdOrder: 2,
+    returnBranchName: '수원역점',
   },
   {
     id: 'c005',
@@ -104,5 +105,6 @@ export const ALL_DEPLOYMENTS = [
     powertrain: 'ice',
     overdueReturn: false,
     createdOrder: 1,
+    returnBranchName: '서초점',
   },
 ];

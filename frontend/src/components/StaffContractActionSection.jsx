@@ -4,7 +4,9 @@
 
 import { useMemo, useState } from 'react';
 import { EvLightningIcon } from './EvLightningIcon';
+import ActiveNotReturnedBadge from './ActiveNotReturnedBadge';
 import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
+import { formatBranchStatusChip } from '../utils/formatBranchStatusChip';
 
 const CONTRACT_SIGN_URL = 'https://fms.olympos.demo/contract/sign?token=demo';
 
@@ -127,14 +129,24 @@ function SendContractLinkModal({
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-gray-900">{d.customerName}</p>
                   <p className="text-[10px] text-gray-500 mt-0.5">{d.customerPhoneMasked}</p>
-                  <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1 min-w-0">
-                    {d.powertrain === 'ev' && (
-                      <EvLightningIcon className="w-3 h-3 text-amber-500 flex-shrink-0" aria-hidden />
-                    )}
-                    <span className="font-mono tabular-nums truncate">{d.plateNumber}</span>
-                    <span className="text-gray-300 flex-shrink-0">·</span>
-                    <span className="truncate">{d.vehicleModel}</span>
-                  </p>
+                  <div className="text-[10px] text-gray-400 mt-1 flex flex-col gap-1 min-w-0">
+                    <span className="flex items-center gap-1 min-w-0">
+                      {d.powertrain === 'ev' && (
+                        <EvLightningIcon className="w-3 h-3 text-amber-500 flex-shrink-0" aria-hidden />
+                      )}
+                      <span className="font-mono tabular-nums truncate">{d.plateNumber}</span>
+                      <span className="text-gray-300 flex-shrink-0">·</span>
+                      <span className="truncate">{d.vehicleModel}</span>
+                    </span>
+                    {d.returnBranchName ? (
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="inline-flex max-w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[9px] font-bold text-slate-800 tracking-tight break-words leading-snug">
+                          {formatBranchStatusChip(d.contractStatus, d.returnBranchName)}
+                        </span>
+                        {d.contractStatus === 'active' ? <ActiveNotReturnedBadge /> : null}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
                 <span
                   className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0

@@ -24,6 +24,8 @@ import {
 } from '../constants/demoHongGilDong';
 import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
 import { EvLightningIcon } from '../components/EvLightningIcon';
+import ActiveNotReturnedBadge from '../components/ActiveNotReturnedBadge';
+import { formatBranchStatusChip } from '../utils/formatBranchStatusChip';
 
 // ── 목(Mock) 계약 데이터 ─────────────────────────────────────
 const MOCK_CONTRACT = {
@@ -73,7 +75,7 @@ function InfoGlyph({ icon }) {
   );
 }
 
-function ContractInfoCard({ contract, powertrain = 'ice', branchCaption }) {
+function ContractInfoCard({ contract, powertrain = 'ice', branchCaption, showActiveNotReturnedBadge }) {
   const isEv = powertrain === 'ev';
   const statusMap = {
     waiting:   { label: '대기',     cls: 'bg-gray-100  text-gray-600' },
@@ -96,7 +98,10 @@ function ContractInfoCard({ contract, powertrain = 'ice', branchCaption }) {
           <p className="text-xs text-gray-400">{contract.employee_name}</p>
           <p className="text-sm font-bold text-gray-900">연번 {contract.contract_number}</p>
         </div>
-        <span className={`badge ${cls}`}>{label}</span>
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          <span className={`badge ${cls}`}>{label}</span>
+          {showActiveNotReturnedBadge ? <ActiveNotReturnedBadge /> : null}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 text-sm">
@@ -499,7 +504,7 @@ export default function DeploymentDetail({ navigate, deploymentId = null }) {
       customer_name: HONG_GILDONG_RENTAL.customerName,
       customer_phone: '01000005678',
       plate_number: HONG_GILDONG_RENTAL.plateNumber,
-      model_name: HONG_GILDONG_RENTAL.vehicleListTitle,
+      model_name: HONG_GILDONG_RENTAL.vehicleModel,
       scheduled_start_at: HONG_GILDONG_RENTAL.scheduled_start_at_iso,
       scheduled_end_at: HONG_GILDONG_RENTAL.scheduled_end_at_iso,
       handover_fuel_pct: HONG_GILDONG_RENTAL.energyPct,
@@ -508,9 +513,8 @@ export default function DeploymentDetail({ navigate, deploymentId = null }) {
   }, [isHongEvDetail, deploymentRow]);
 
   const branchCaption = useMemo(() => {
-    if (!isHongEvDetail || !deploymentRow) return null;
-    if (deploymentRow.contractStatus === 'returned') return deploymentRow.returnCompletedBranchLabel;
-    return `반납 예정 : ${deploymentRow.dropoffBranchLabel}`;
+    if (!isHongEvDetail || !deploymentRow?.returnBranchName) return null;
+    return formatBranchStatusChip(deploymentRow.contractStatus, deploymentRow.returnBranchName);
   }, [isHongEvDetail, deploymentRow]);
 
   const [showConfirmed, setShowConfirmed] = useState(false);
@@ -577,6 +581,7 @@ export default function DeploymentDetail({ navigate, deploymentId = null }) {
             contract={detailContract}
             powertrain={isHongEvDetail ? 'ev' : 'ice'}
             branchCaption={branchCaption}
+            showActiveNotReturnedBadge={detailContract.status === 'active'}
           />
 
           {isHongEvDetail && (
