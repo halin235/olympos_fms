@@ -10,6 +10,7 @@ import {
   DEMO_CONTRACT_END_KO,
   DEMO_PERIOD_MONTH_KO,
 } from '../constants/demoTimeline';
+import { DEMO_PLATE_SPARK } from '../constants/demoVehiclePlates';
 import ContractSignatureModal from '../components/ContractSignatureModal';
 import { downloadInsuranceContractPdf } from '../utils/contractPdfDownload';
 
@@ -17,7 +18,7 @@ const MOCK_CONTRACT = {
   contractNo:   DEMO_CONTRACT_NUMBER,
   type:         '보험대차',
   vehicle:      '스파크',
-  plate:        '서울1호12354',
+  plate:        DEMO_PLATE_SPARK,
   /** 화면·계약 본문 표기용 실명 */
   lesseeName:   '송하린',
   startDate:    DEMO_CONTRACT_START_KO,
@@ -143,10 +144,13 @@ export default function ContractDetailPage({ navigate }) {
                     <dt className="text-gray-400 shrink-0">임차인</dt>
                     <dd className="font-semibold text-gray-900 text-right">{MOCK_CONTRACT.lesseeName}</dd>
                   </div>
-                  <div className="flex justify-between gap-3">
+                  <div className="flex justify-between gap-3 items-baseline">
                     <dt className="text-gray-400 shrink-0">차량</dt>
-                    <dd className="font-semibold text-gray-900 text-right">
-                      {MOCK_CONTRACT.vehicle} ({MOCK_CONTRACT.plate})
+                    <dd className="font-semibold text-gray-900 text-right min-w-0">
+                      <span className="font-black">{MOCK_CONTRACT.vehicle}</span>{' '}
+                      <span className="font-mono tabular-nums text-gray-800 whitespace-nowrap">
+                        ({MOCK_CONTRACT.plate})
+                      </span>
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">

@@ -3,6 +3,7 @@
  */
 
 import { useMemo, useState } from 'react';
+import { EvLightningIcon } from './EvLightningIcon';
 import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
 
 const CONTRACT_SIGN_URL = 'https://fms.olympos.demo/contract/sign?token=demo';
@@ -126,8 +127,13 @@ function SendContractLinkModal({
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-gray-900">{d.customerName}</p>
                   <p className="text-[10px] text-gray-500 mt-0.5">{d.customerPhoneMasked}</p>
-                  <p className="text-[10px] text-gray-400 mt-1 font-mono">
-                    {d.plateNumber} · {d.vehicleModel}
+                  <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1 min-w-0">
+                    {d.powertrain === 'ev' && (
+                      <EvLightningIcon className="w-3 h-3 text-amber-500 flex-shrink-0" aria-hidden />
+                    )}
+                    <span className="font-mono tabular-nums truncate">{d.plateNumber}</span>
+                    <span className="text-gray-300 flex-shrink-0">·</span>
+                    <span className="truncate">{d.vehicleModel}</span>
                   </p>
                 </div>
                 <span

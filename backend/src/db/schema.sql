@@ -11,7 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "postgis";  -- Geofence 좌표 계산용
 -- ============================================================
 CREATE TABLE vehicles (
   id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  plate_number    VARCHAR(20)  NOT NULL UNIQUE,  -- 차량번호 (서울1가1234)
+  plate_number    VARCHAR(20)  NOT NULL UNIQUE,  -- 차량번호 (예: 123하 4567)
   model_name      VARCHAR(100) NOT NULL,
   fuel_type       VARCHAR(20)  NOT NULL DEFAULT 'gasoline' CHECK (fuel_type IN ('gasoline','diesel','electric','lpg')),
   fuel_price_per_liter NUMERIC(8,2) NOT NULL DEFAULT 1700.00, -- 원/L
@@ -190,6 +190,6 @@ VALUES ('서울 본점', 37.5665, 126.9780, 10.0);
 
 INSERT INTO vehicles (plate_number, model_name, fuel_type, fuel_price_per_liter, tank_capacity_liters)
 VALUES
-  ('서울1호12354', '스파크',    'gasoline', 1720.00, 35.0),
-  ('서울1가1234',  '아반떼',    'gasoline', 1720.00, 50.0),
-  ('서울2나5678',  'SM6',       'gasoline', 1720.00, 55.0);
+  ('123하 4567',   '스파크',    'gasoline', 1720.00, 35.0),
+  ('11허 2233',    '아반떼',    'gasoline', 1720.00, 50.0),
+  ('123허 7890',   '테슬라 모델 3', 'electric', 350.00, 75.0);

@@ -4,6 +4,16 @@
  */
 
 import { DEMO_CONTRACT_NUMBER } from '../constants/demoTimeline';
+import {
+  HONG_GILDONG_RENTAL,
+  getHongGilDongPeriodLabelKo,
+} from '../constants/demoHongGilDong';
+import {
+  DEMO_PLATE_GRANDEUR,
+  DEMO_PLATE_K5,
+  DEMO_PLATE_SONATA,
+  DEMO_PLATE_SPARK,
+} from '../constants/demoVehiclePlates';
 
 export const STAFF_CONTRACT_RECORDS = [
   {
@@ -12,18 +22,22 @@ export const STAFF_CONTRACT_RECORDS = [
     contractNo: DEMO_CONTRACT_NUMBER,
     customerName: '송하린',
     vehicleModel: '스파크',
-    plateNumber: '서울1호12354',
+    plateNumber: DEMO_PLATE_SPARK,
     periodLabel: '2026.05.02 10:18 ~ 2026.05.03 10:18',
     eSignStatus: 'pending_signature',
   },
   {
     id: 'ctr-2',
-    deploymentId: 'c002',
-    contractNo: 'R260502630011',
-    customerName: '홍길동',
-    vehicleModel: 'SM6',
-    plateNumber: '서울2나5678',
-    periodLabel: '2026.05.01 14:00 ~ 2026.05.03 20:00',
+    deploymentId: HONG_GILDONG_RENTAL.deploymentId,
+    contractNo: HONG_GILDONG_RENTAL.contractNo,
+    customerName: HONG_GILDONG_RENTAL.customerName,
+    vehicleModel: HONG_GILDONG_RENTAL.vehicleModel,
+    vehicleListTitle: HONG_GILDONG_RENTAL.vehicleListTitle,
+    plateNumber: HONG_GILDONG_RENTAL.plateNumber,
+    powertrain: HONG_GILDONG_RENTAL.powertrain,
+    dropoffBranchLabel: HONG_GILDONG_RENTAL.dropoffBranchLabel,
+    returnCompletedBranchLabel: HONG_GILDONG_RENTAL.returnCompletedBranchLabel,
+    periodLabel: getHongGilDongPeriodLabelKo(),
     eSignStatus: 'signed',
   },
   {
@@ -32,7 +46,7 @@ export const STAFF_CONTRACT_RECORDS = [
     contractNo: 'R260503630003',
     customerName: '박민준',
     vehicleModel: '쏘나타',
-    plateNumber: '서울3가5556',
+    plateNumber: DEMO_PLATE_SONATA,
     periodLabel: '2026.05.02 08:00 ~ 2026.05.03 14:30',
     eSignStatus: 'pending_signature',
   },
@@ -42,7 +56,7 @@ export const STAFF_CONTRACT_RECORDS = [
     contractNo: 'R260501630004',
     customerName: '김철수',
     vehicleModel: 'K5',
-    plateNumber: '경기11가0001',
+    plateNumber: DEMO_PLATE_K5,
     periodLabel: '2026.05.01 09:00 ~ 2026.05.02 18:00',
     eSignStatus: 'sent_insurer',
   },
@@ -52,7 +66,7 @@ export const STAFF_CONTRACT_RECORDS = [
     contractNo: 'R260503630005',
     customerName: '최지수',
     vehicleModel: '그랜저',
-    plateNumber: '부산7다9999',
+    plateNumber: DEMO_PLATE_GRANDEUR,
     periodLabel: '2026.05.03 11:00 ~ 2026.05.05 19:00',
     eSignStatus: 'signed',
   },

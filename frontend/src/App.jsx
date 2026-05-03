@@ -11,7 +11,7 @@
  *   page: 'detail'   → UserSettlementPage (정산 상세 — 탭 바 고정)
  *   page: 'contract' → ContractDetailPage (계약서 확인 — 계약서 탭 활성)
  *
- * navigate(page, role?) — page 이동, role을 함께 전달하면 역할도 전환
+ * navigate(page, role?, extra?) — extra.deploymentId 로 직원 배차 상세 연동
  * navigate('role-select') — 역할 선택 화면으로 초기화
  */
 
@@ -31,20 +31,20 @@ export default function App() {
   const [page, setPage] = useState('home');       // 라우트 키
   const [staffTab, setStaffTab] = useState('home'); // 직원 셸 내부 탭
   const [userTab, setUserTab] = useState('home'); // 고객 홈 셸 탭 (홈·계약서·알림·마이)
+  /** 직원 배차 상세에서 선택된 배차 ID (홈 리스트 → 상세 연동) */
+  const [staffDetailDeploymentId, setStaffDetailDeploymentId] = useState(null);
 
   /**
-   * navigate(targetPage, targetRole?)
-   *   - targetPage: 이동할 페이지 키
-   *   - targetRole: (선택) 역할까지 동시에 전환할 때 사용
-   *   - 'role-select' 를 전달하면 역할 선택 화면으로 리셋
-   *   - 직원 역할에서 home | contract | alarm | my 는 같은 셸에서 탭만 전환
+   * navigate(targetPage, targetRole?, extra?)
+   *   - extra.deploymentId: 직원 배차 상세(DeploymentDetail)에 전달할 배차 ID
    */
-  const navigate = (targetPage, targetRole) => {
+  const navigate = (targetPage, targetRole, extra) => {
     if (targetPage === 'role-select') {
       setRole(null);
       setPage('home');
       setStaffTab('home');
       setUserTab('home');
+      setStaffDetailDeploymentId(null);
       return;
     }
 
@@ -55,8 +55,15 @@ export default function App() {
 
     const staffShellPages = new Set(['home', 'contract', 'alarm', 'my']);
     if (staffShellPages.has(targetPage) && effectiveRole === 'staff') {
+      setStaffDetailDeploymentId(null);
       setStaffTab(targetPage);
       setPage('home');
+      return;
+    }
+
+    if (effectiveRole === 'staff' && targetPage === 'detail') {
+      setStaffDetailDeploymentId(extra?.deploymentId ?? null);
+      setPage('detail');
       return;
     }
 
@@ -84,7 +91,11 @@ export default function App() {
 
   // ── 직원용 (B2B) ──────────────────────────────────────────
   if (role === 'staff') {
-    if (page === 'detail') return <DeploymentDetail navigate={navigate} />;
+    if (page === 'detail') {
+      return (
+        <DeploymentDetail navigate={navigate} deploymentId={staffDetailDeploymentId} />
+      );
+    }
     if (page === 'home')   return <StaffShellPage navigate={navigate} staffTab={staffTab} />;
   }
 

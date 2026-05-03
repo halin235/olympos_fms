@@ -10,11 +10,12 @@ import {
   DEMO_HOME_END_DATE_KO,
   DEMO_HOME_START_DATE_KO,
 } from '../constants/demoTimeline';
+import { DEMO_PLATE_SPARK } from '../constants/demoVehiclePlates';
 
 const MOCK_RENTAL = {
   customerName: '송하린',
   vehicle:      '스파크',
-  plate:        '서울1호12354',
+  plate:        DEMO_PLATE_SPARK,
   startDate:    DEMO_HOME_START_DATE_KO,
   endDate:      DEMO_HOME_END_DATE_KO,
   status:       'returned',
@@ -110,9 +111,16 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
                       d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1m8-11h1l3 3v4h-1" />
                   </svg>
                 </div>
-                <div>
-                  <p className="text-lg font-black text-gray-900">{MOCK_RENTAL.vehicle}</p>
-                  <p className="text-sm text-gray-500">{MOCK_RENTAL.plate}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xl font-black text-gray-900 tracking-tight leading-tight">
+                    {MOCK_RENTAL.vehicle}
+                  </p>
+                  <p
+                    className="mt-1 text-[13px] font-semibold text-gray-700 tabular-nums tracking-wide whitespace-nowrap overflow-hidden text-ellipsis font-mono"
+                    title={MOCK_RENTAL.plate}
+                  >
+                    {MOCK_RENTAL.plate}
+                  </p>
                   {/* Task 3: 언어화 — '보험대차 · 1일' → '보험대차 (1일 이용)' */}
                   <span className="mt-1 inline-block text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 font-medium">
                     {MOCK_RENTAL.contractType} ({MOCK_RENTAL.days}일 이용)
@@ -124,6 +132,11 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
                 <DateBox label="대여 시작일" value={MOCK_RENTAL.startDate} />
                 <DateBox label="반납 일시" value={MOCK_RENTAL.endDate} accent />
               </div>
+              {MOCK_RENTAL.status === 'returned' && (
+                <p className="mt-3 text-xs text-gray-500 leading-relaxed border-t border-gray-100 pt-3">
+                  지정된 지점에 정상적으로 반납 처리가 완료되었습니다.
+                </p>
+              )}
             </div>
           </div>
 

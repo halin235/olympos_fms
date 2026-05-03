@@ -9,11 +9,12 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useDemoSettlement } from '../demo/useDemoSettlement';
 import FuelChart from '../components/FuelChart';
 import { DEMO_CONTRACT_END_KO, DEMO_RETURN_CONFIRM_KO } from '../constants/demoTimeline';
+import { DEMO_PLATE_SPARK } from '../constants/demoVehiclePlates';
 
 const MOCK_CONTRACT = {
   customerName:  '송하린_데모버전',
   vehicle:       '스파크',
-  plate:         '서울1호12354',
+  plate:         DEMO_PLATE_SPARK,
   endDate:       DEMO_CONTRACT_END_KO,
   returnDate:    DEMO_RETURN_CONFIRM_KO,
   handoverFuel:  75,
@@ -93,9 +94,11 @@ export default function UserSettlementPage({ navigate }) {
                     d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1" />
                 </svg>
               </div>
-              <div>
-                <p className="text-sm font-bold text-gray-900">{MOCK_CONTRACT.vehicle}</p>
-                <p className="text-xs text-gray-400">{MOCK_CONTRACT.plate}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-black text-gray-900">{MOCK_CONTRACT.vehicle}</p>
+                <p className="mt-0.5 text-xs font-semibold text-gray-700 font-mono tabular-nums whitespace-nowrap">
+                  {MOCK_CONTRACT.plate}
+                </p>
               </div>
               <div className="ml-auto text-right">
                 <p className="text-xs text-gray-400">반납 예정</p>

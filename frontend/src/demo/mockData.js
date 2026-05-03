@@ -2,7 +2,7 @@
  * 올림포스 FMS 데모용 샘플 데이터
  *
  * 시나리오:
- *   차량: 스파크 (서울1호12354), 탱크 35L
+ *   차량: 스파크 (123하 4567), 탱크 35L
  *   계약 종료: 2026-05-03 10:18 KST
  *   지오펜스 진입: 10:48 KST (+30분)
  *   엔진 OFF: 10:49:30 KST (+31.5분)
@@ -21,6 +21,7 @@ import {
   DEMO_GEOFENCE_ENTER_AT_UTC,
   demoFuelMeasuredAt,
 } from '../constants/demoTimeline';
+import { DEMO_PLATE_SPARK } from '../constants/demoVehiclePlates';
 
 // ── 연료 측정값 (OBD-II, 2분 간격, KST 10:10~10:48) ──────────
 // raw   : OBD 원시값 (노이즈 포함)
@@ -110,7 +111,7 @@ export const MOCK_SETTLEMENT_BASE = {
   contract_type:        'insurance',
   employee_name:        '직원2',
   customer_name:        '직원2 고객',
-  plate_number:         '서울1호12354',
+  plate_number:         DEMO_PLATE_SPARK,
   model_name:           '스파크',
 
   scheduled_end_at:     DEMO_SCHEDULED_END_AT_UTC,   // KST 10:18

@@ -3,6 +3,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
+import { EvLightningIcon } from './EvLightningIcon';
 import {
   STAFF_CONTRACT_RECORDS,
   CONTRACT_FLOW_LABELS,
@@ -173,27 +174,42 @@ export default function StaffContractCenter() {
             filtered.map((r) => (
               <div
                 key={r.id}
-                className="px-3 py-3 flex gap-2.5 items-start hover:bg-gray-50/80 transition-colors"
+                className="px-3 py-2 flex gap-2 items-start hover:bg-gray-50/80 transition-colors"
               >
                 <input
                   type="checkbox"
                   checked={selected.has(r.id)}
                   onChange={() => toggleOne(r.id)}
-                  className="mt-1 rounded border-gray-300 text-olympos-blue focus:ring-olympos-blue flex-shrink-0"
+                  className="mt-0.5 rounded border-gray-300 text-olympos-blue focus:ring-olympos-blue flex-shrink-0"
                   aria-label={`${r.customerName} 계약 선택`}
                 />
-                <div className="flex-1 min-w-0 space-y-2">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs font-bold text-gray-900">{r.customerName}</span>
-                    <span className="text-[10px] text-gray-400 font-mono">{r.contractNo}</span>
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-start gap-1">
+                    {r.powertrain === 'ev' ? (
+                      <EvLightningIcon className="w-3 h-3 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden />
+                    ) : null}
+                    <span className="text-[11px] font-bold text-gray-900 leading-snug">
+                      {r.vehicleListTitle ?? r.vehicleModel}
+                    </span>
                   </div>
-                  <p className="text-[11px] text-gray-700">
-                    {r.vehicleModel}{' '}
-                    <span className="text-gray-400 font-mono">{r.plateNumber}</span>
+                  <p className="text-[10px] font-semibold text-gray-800 font-mono tabular-nums tracking-tight">
+                    {r.plateNumber}
                   </p>
+                  <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                    <span className="font-bold text-gray-900">{r.customerName}</span>
+                    <span className="text-gray-400 font-mono">{r.contractNo}</span>
+                  </div>
                   <p className="text-[10px] text-gray-400 font-mono">{r.periodLabel}</p>
+                  {r.dropoffBranchLabel ? (
+                    <p className="text-[10px] text-slate-600 font-semibold flex items-center gap-1">
+                      <span aria-hidden className="text-[10px]">
+                        📍
+                      </span>
+                      반납 예정 : {r.dropoffBranchLabel}
+                    </p>
+                  ) : null}
 
-                  <div className="flex flex-wrap items-center gap-2 justify-between">
+                  <div className="flex flex-wrap items-center gap-2 justify-between pt-0.5">
                     <span
                       className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${CONTRACT_FLOW_BADGE[r.eSignStatus]}`}
                     >

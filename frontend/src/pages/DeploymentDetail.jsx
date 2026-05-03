@@ -17,6 +17,13 @@ import {
   DEMO_SCHEDULED_END_AT_KST,
   DEMO_SCHEDULED_START_AT_KST,
 } from '../constants/demoTimeline';
+import { DEMO_PLATE_SPARK } from '../constants/demoVehiclePlates';
+import {
+  HONG_GILDONG_DEPLOYMENT_ID,
+  HONG_GILDONG_RENTAL,
+} from '../constants/demoHongGilDong';
+import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
+import { EvLightningIcon } from '../components/EvLightningIcon';
 
 // ── 목(Mock) 계약 데이터 ─────────────────────────────────────
 const MOCK_CONTRACT = {
@@ -26,7 +33,7 @@ const MOCK_CONTRACT = {
   employee_name:   '직원2',
   customer_name:   '송하린_데모버전',
   customer_phone:  '010-3472-9996',
-  plate_number:    '서울1호12354',
+  plate_number:    DEMO_PLATE_SPARK,
   model_name:      '스파크',
   scheduled_start_at: DEMO_SCHEDULED_START_AT_KST,
   scheduled_end_at:   DEMO_SCHEDULED_END_AT_KST,
@@ -57,7 +64,17 @@ function PageHeader({ onBack }) {
 // ─────────────────────────────────────────────────────────────
 // 계약 기본정보 카드
 // ─────────────────────────────────────────────────────────────
-function ContractInfoCard({ contract }) {
+function InfoGlyph({ icon }) {
+  if (typeof icon === 'string') {
+    return <span className="text-base mt-0.5">{icon}</span>;
+  }
+  return (
+    <span className="text-base mt-0.5 inline-flex items-center justify-center flex-shrink-0">{icon}</span>
+  );
+}
+
+function ContractInfoCard({ contract, powertrain = 'ice', branchCaption }) {
+  const isEv = powertrain === 'ev';
   const statusMap = {
     waiting:   { label: '대기',     cls: 'bg-gray-100  text-gray-600' },
     active:    { label: '배차중',   cls: 'bg-olympos-blue text-white' },
@@ -87,9 +104,25 @@ function ContractInfoCard({ contract }) {
         <InfoItem icon="👤" label="고객"   value={`${contract.customer_name}`} />
         <InfoItem icon="📅" label="대여"   value={fmtDate(contract.scheduled_start_at)} />
         <InfoItem icon="🏁" label="반납예정" value={fmtDate(contract.scheduled_end_at)} />
-        <InfoItem icon="⛽" label="인수 연료" value={`${contract.handover_fuel_pct}%`} />
+        <InfoItem
+          icon={isEv ? <EvLightningIcon className="w-4 h-4 text-amber-400" /> : '⛽'}
+          label={isEv ? '배터리 잔량 (SoC)' : '인수 연료'}
+          value={`${contract.handover_fuel_pct}%`}
+        />
         <InfoItem icon="📋" label="계약 유형" value={contract.contract_type === 'insurance' ? '보험대차' : '일반렌트'} />
       </div>
+
+      {branchCaption ? (
+        <div className="flex items-start gap-2 rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+          <span className="text-sm mt-0.5" aria-hidden>
+            📍
+          </span>
+          <div>
+            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">반납 지점</p>
+            <p className="text-xs text-gray-800 font-bold leading-snug">{branchCaption}</p>
+          </div>
+        </div>
+      ) : null}
 
       <button className="w-full py-2.5 rounded-lg border-2 border-olympos-blue text-olympos-blue
                          text-sm font-semibold hover:bg-olympos-blue-lt transition-colors">
@@ -102,11 +135,35 @@ function ContractInfoCard({ contract }) {
 function InfoItem({ icon, label, value }) {
   return (
     <div className="flex gap-2 items-start">
-      <span className="text-base mt-0.5">{icon}</span>
+      <InfoGlyph icon={icon} />
       <div>
         <p className="text-xs text-gray-400">{label}</p>
         <p className="text-sm text-gray-800 font-medium leading-snug">{value}</p>
       </div>
+    </div>
+  );
+}
+
+function EvStaffDetailPanel({ branchCaption, soc }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 space-y-3">
+      <div className="flex items-center gap-2">
+        <EvLightningIcon className="w-5 h-5 text-amber-400 flex-shrink-0" aria-hidden />
+        <h3 className="text-sm font-bold text-gray-900">전기차 배차 모니터링</h3>
+      </div>
+      <p className="text-xs text-gray-600 leading-relaxed">
+        테슬라 등 전기차 배차는 배터리 충전 상태(SoC)를 기준으로 표시합니다. 내연기관 차량용 OBD 연료 그래프·정산 시뮬은 이 화면에서 생략됩니다.
+      </p>
+      <div className="rounded-xl bg-slate-50 border border-slate-100 px-3 py-2.5 flex items-center justify-between gap-2">
+        <span className="text-xs font-bold text-slate-700">배터리 잔량</span>
+        <span className="text-sm font-mono tabular-nums font-black text-emerald-700">{soc}%</span>
+      </div>
+      {branchCaption ? (
+        <p className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+          <span aria-hidden>📍</span>
+          {branchCaption}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -281,7 +338,7 @@ function DemoCalculatePanel({ onRun, loading }) {
           {/* 샘플 데이터 미리보기 */}
           <div className="bg-gray-50 rounded-xl p-3 space-y-1.5 text-xs text-gray-600">
             <p className="font-semibold text-gray-700 mb-2">📊 적용될 샘플 데이터</p>
-            <PreviewRow label="차량"     value="스파크 / 서울1호12354 (탱크 35L)" />
+            <PreviewRow label="차량"     value={`스파크 / ${DEMO_PLATE_SPARK} (탱크 35L)`} />
             <PreviewRow label="계약 종료" value={DEMO_PREVIEW_CONTRACT_END_KST} />
             <PreviewRow label="반납 확정" value={DEMO_PREVIEW_RETURN_CONFIRMED_KST} />
             <PreviewRow label="연료 변화" value="75% → 68.14% (−6.86%, MAF 20점)" />
@@ -413,13 +470,48 @@ function CustomerViewLinkCard({ navigate }) {
   );
 }
 
-export default function DeploymentDetail({ navigate }) {
+export default function DeploymentDetail({ navigate, deploymentId = null }) {
   const {
     settlement, geofenceEvents, fuelReadings,
     loading, error,
     fetchSettlement, runCalculation,
     confirmSettlement,
   } = useDemoSettlement();
+
+  const deploymentRow = useMemo(
+    () => (deploymentId ? ALL_DEPLOYMENTS.find((d) => d.id === deploymentId) : null),
+    [deploymentId],
+  );
+
+  const isHongEvDetail = deploymentId === HONG_GILDONG_DEPLOYMENT_ID;
+
+  const detailContract = useMemo(() => {
+    if (!isHongEvDetail) return MOCK_CONTRACT;
+    const row = deploymentRow;
+    const st = row?.contractStatus;
+    const status =
+      st === 'returned' ? 'returned' : st === 'active' ? 'active' : 'active';
+    return {
+      id: 'hong-contract-demo',
+      contract_number: HONG_GILDONG_RENTAL.contractNo,
+      contract_type: 'general',
+      employee_name: row?.employee ?? '직원3',
+      customer_name: HONG_GILDONG_RENTAL.customerName,
+      customer_phone: '01000005678',
+      plate_number: HONG_GILDONG_RENTAL.plateNumber,
+      model_name: HONG_GILDONG_RENTAL.vehicleListTitle,
+      scheduled_start_at: HONG_GILDONG_RENTAL.scheduled_start_at_iso,
+      scheduled_end_at: HONG_GILDONG_RENTAL.scheduled_end_at_iso,
+      handover_fuel_pct: HONG_GILDONG_RENTAL.energyPct,
+      status,
+    };
+  }, [isHongEvDetail, deploymentRow]);
+
+  const branchCaption = useMemo(() => {
+    if (!isHongEvDetail || !deploymentRow) return null;
+    if (deploymentRow.contractStatus === 'returned') return deploymentRow.returnCompletedBranchLabel;
+    return `반납 예정 : ${deploymentRow.dropoffBranchLabel}`;
+  }, [isHongEvDetail, deploymentRow]);
 
   const [showConfirmed, setShowConfirmed] = useState(false);
   const [operationLogs, setOperationLogs] = useState([]);
@@ -469,10 +561,10 @@ export default function DeploymentDetail({ navigate }) {
         {/* 히어로 배너 */}
         <div className="relative bg-olympos-navy overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-olympos-blue/80 to-olympos-navy" />
-          <div className="relative px-5 pt-4 pb-6 text-white">
+          <div className="relative px-5 pt-3 pb-4 text-white">
             <p className="text-xs text-blue-200 mb-0.5">편리하고 신속한 배차</p>
             <p className="text-xs text-blue-300">올림포스와 함께 안전한 하루를 보내세요 :)</p>
-            <div className="mt-3 inline-flex items-center gap-1.5 bg-white/15 rounded-full px-3 py-1">
+            <div className="mt-2 inline-flex items-center gap-1.5 bg-white/15 rounded-full px-3 py-1">
               <span className="text-xs font-semibold">배차관리</span>
             </div>
           </div>
@@ -481,15 +573,23 @@ export default function DeploymentDetail({ navigate }) {
         <div className="px-4 -mt-3 space-y-3 pb-5">
 
           {/* 계약 기본정보 */}
-          <ContractInfoCard contract={MOCK_CONTRACT} />
+          <ContractInfoCard
+            contract={detailContract}
+            powertrain={isHongEvDetail ? 'ev' : 'ice'}
+            branchCaption={branchCaption}
+          />
+
+          {isHongEvDetail && (
+            <EvStaffDetailPanel branchCaption={branchCaption} soc={HONG_GILDONG_RENTAL.energyPct} />
+          )}
 
           {/* 정산 없을 때: 데모 실행 패널 */}
-          {!settlement && !loading && (
+          {!isHongEvDetail && !settlement && !loading && (
             <DemoCalculatePanel onRun={runCalculation} loading={loading} />
           )}
 
           {/* 로딩 스피너 */}
-          {loading && (
+          {!isHongEvDetail && loading && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center gap-3">
               <svg className="animate-spin w-8 h-8 text-olympos-blue" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -501,14 +601,14 @@ export default function DeploymentDetail({ navigate }) {
           )}
 
           {/* 오류 */}
-          {error && (
+          {!isHongEvDetail && error && (
             <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
               <p className="text-sm text-red-700 font-semibold">오류: {error}</p>
             </div>
           )}
 
           {/* ── 정산 리포트 섹션 ── */}
-          {settlement && (
+          {!isHongEvDetail && settlement && (
             <>
               {/* 고객 화면 연결 카드 (직원용 전용) */}
               <CustomerViewLinkCard navigate={navigate} />
@@ -536,7 +636,7 @@ export default function DeploymentDetail({ navigate }) {
               {/* 연료 변화 그래프 */}
               <FuelChart
                 readings={fuelReadings}
-                handoverFuelPct={MOCK_CONTRACT.handover_fuel_pct}
+                handoverFuelPct={detailContract.handover_fuel_pct}
                 isEstimated={settlement.is_estimated}
                 gapMinutes={settlement.data_gap_minutes}
               />
