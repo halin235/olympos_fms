@@ -5,22 +5,26 @@
  * Task 2: 정산 카드 슬림 다운 — 연료 세부 수치 제거, 총액만 강조
  * Task 3: 용어 언어화 — '보험대차 · 1일' → '보험대차 (1일 이용)'
  */
-
+import {
+  DEMO_DISPLAY_ANCHOR_DATE_KO,
+  DEMO_HOME_END_DATE_KO,
+  DEMO_HOME_START_DATE_KO,
+} from '../constants/demoTimeline';
 
 const MOCK_RENTAL = {
   customerName: '송하린',
   vehicle:      '스파크',
   plate:        '서울1호12354',
-  startDate:    '2022년 5월 11일',
-  endDate:      '2022년 5월 12일 10:18',
+  startDate:    DEMO_HOME_START_DATE_KO,
+  endDate:      DEMO_HOME_END_DATE_KO,
   status:       'returned',
   contractType: '보험대차',
   days:         1,
 };
 
-// 데모용 요약 상태 데이터
+// 데모용 요약 상태 데이터 (상단 카드 · 정산 카드 공통)
 const SUMMARY = {
-  pendingCount: 2,
+  pendingCount: 1,
   totalAmount:  7130,
 };
 
@@ -84,6 +88,7 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
           <StatusSummaryCard
             name={MOCK_RENTAL.customerName}
             pendingCount={SUMMARY.pendingCount}
+            totalAmount={SUMMARY.totalAmount}
             onDetailClick={() => navigate('detail')}
           />
 
@@ -117,7 +122,7 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
 
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <DateBox label="대여 시작일" value={MOCK_RENTAL.startDate} />
-                <DateBox label="반납 예정일" value={MOCK_RENTAL.endDate} accent />
+                <DateBox label="반납 일시" value={MOCK_RENTAL.endDate} accent />
               </div>
             </div>
           </div>
@@ -127,20 +132,20 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
             <div className="flex items-center gap-2 mb-4">
               <span className="w-1.5 h-5 rounded-full bg-olympos-blue inline-block" />
               <h3 className="text-sm font-bold text-gray-900">내 정산 금액</h3>
-              <span className="ml-auto badge bg-yellow-100 text-yellow-700 border border-yellow-200 text-[11px]">
+              <span className="ml-auto badge bg-yellow-50 text-olympos-blue border border-yellow-300 text-[11px] font-bold shadow-sm">
                 확인 필요
               </span>
             </div>
 
             {/* 총액 강조 — 세부 내역 수치 제거 */}
-            <div className="bg-gradient-to-br from-olympos-blue to-olympos-navy rounded-2xl p-5 text-white mb-4">
+            <div className="bg-gradient-to-br from-olympos-blue to-olympos-navy rounded-2xl p-5 text-white mb-4 shadow-inner shadow-black/10">
               <p className="text-xs text-blue-200 mb-1.5">반납 후 최종 정산 금액</p>
-              <p className="text-4xl font-black tracking-tight">
+              <p className="text-5xl sm:text-[2.75rem] font-black tracking-tight tabular-nums leading-none drop-shadow-sm">
                 {SUMMARY.totalAmount.toLocaleString('ko-KR')}
-                <span className="text-xl font-semibold ml-1">원</span>
+                <span className="text-2xl font-bold ml-1 align-baseline">원</span>
               </p>
-              <p className="text-xs text-blue-200 mt-3 leading-relaxed">
-                자세한 내역은 아래 버튼을 눌러 확인하세요.
+              <p className="text-xs text-blue-100/95 mt-3 leading-relaxed font-medium">
+                위 금액은 {DEMO_DISPLAY_ANCHOR_DATE_KO} 반납 기준으로 산출된 예상 합계입니다. 상단 안내와 동일합니다.
               </p>
             </div>
 
@@ -258,13 +263,14 @@ function UserMyTabPlaceholder() {
 // ─────────────────────────────────────────────────────────────
 // Task 1: 상태 요약 메시지 카드
 // ─────────────────────────────────────────────────────────────
-function StatusSummaryCard({ name, pendingCount, onDetailClick }) {
+function StatusSummaryCard({ name, pendingCount, totalAmount, onDetailClick }) {
+  const amt = Number(totalAmount).toLocaleString('ko-KR');
   return (
     <div className="bg-white rounded-2xl shadow-md shadow-blue-50 border border-blue-100 overflow-hidden">
       <div className="h-1 bg-gradient-to-r from-olympos-blue via-blue-400 to-blue-300" />
       <div className="px-4 py-4 flex items-start gap-3">
         {/* 아이콘 */}
-        <div className="w-10 h-10 rounded-xl bg-olympos-blue-lt flex items-center justify-center flex-shrink-0 mt-0.5">
+        <div className="w-10 h-10 rounded-xl bg-olympos-blue-lt flex items-center justify-center flex-shrink-0 mt-0.5 border border-blue-100">
           <svg className="w-5 h-5 text-olympos-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -278,7 +284,10 @@ function StatusSummaryCard({ name, pendingCount, onDetailClick }) {
           </p>
           <p className="text-xs text-gray-500 mt-1 leading-relaxed">
             확인이 필요한 정산 내역이{' '}
-            <span className="font-bold text-olympos-blue">{pendingCount}건</span> 있습니다.
+            <span className="font-bold text-olympos-blue">{pendingCount}건</span>
+            {' '}있습니다. 예상 합계{' '}
+            <span className="font-black text-gray-900 tabular-nums">{amt}원</span>
+            은 아래 「내 정산 금액」과 동일합니다.
           </p>
         </div>
 

@@ -10,19 +10,26 @@ import {
   MOCK_FUEL_READINGS,
   MOCK_FUEL_READINGS_HIGH_ERROR,
 } from '../demo/mockData';
+import {
+  DEMO_CONTRACT_NUMBER,
+  DEMO_PREVIEW_CONTRACT_END_KST,
+  DEMO_PREVIEW_RETURN_CONFIRMED_KST,
+  DEMO_SCHEDULED_END_AT_KST,
+  DEMO_SCHEDULED_START_AT_KST,
+} from '../constants/demoTimeline';
 
 // ── 목(Mock) 계약 데이터 ─────────────────────────────────────
 const MOCK_CONTRACT = {
   id:              'c3a8f2d1-0001-4e5b-9f0a-000000000001',
-  contract_number: 'R220511630002',
+  contract_number: DEMO_CONTRACT_NUMBER,
   contract_type:   'insurance',
   employee_name:   '직원2',
   customer_name:   '송하린_데모버전',
   customer_phone:  '010-3472-9996',
   plate_number:    '서울1호12354',
   model_name:      '스파크',
-  scheduled_start_at: '2022-05-11T10:18:00+09:00',
-  scheduled_end_at:   '2022-05-12T10:18:00+09:00',
+  scheduled_start_at: DEMO_SCHEDULED_START_AT_KST,
+  scheduled_end_at:   DEMO_SCHEDULED_END_AT_KST,
   handover_fuel_pct:  75,
   status: 'returned',
 };
@@ -275,8 +282,8 @@ function DemoCalculatePanel({ onRun, loading }) {
           <div className="bg-gray-50 rounded-xl p-3 space-y-1.5 text-xs text-gray-600">
             <p className="font-semibold text-gray-700 mb-2">📊 적용될 샘플 데이터</p>
             <PreviewRow label="차량"     value="스파크 / 서울1호12354 (탱크 35L)" />
-            <PreviewRow label="계약 종료" value="2022-05-12 10:18 KST" />
-            <PreviewRow label="반납 확정" value="2022-05-12 10:49:30 KST (+31.5분)" />
+            <PreviewRow label="계약 종료" value={DEMO_PREVIEW_CONTRACT_END_KST} />
+            <PreviewRow label="반납 확정" value={DEMO_PREVIEW_RETURN_CONFIRMED_KST} />
             <PreviewRow label="연료 변화" value="75% → 68.14% (−6.86%, MAF 20점)" />
             <PreviewRow
               label="검증 예상"

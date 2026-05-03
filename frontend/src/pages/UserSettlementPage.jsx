@@ -8,13 +8,14 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useDemoSettlement } from '../demo/useDemoSettlement';
 import FuelChart from '../components/FuelChart';
+import { DEMO_CONTRACT_END_KO, DEMO_RETURN_CONFIRM_KO } from '../constants/demoTimeline';
 
 const MOCK_CONTRACT = {
   customerName:  '송하린_데모버전',
   vehicle:       '스파크',
   plate:         '서울1호12354',
-  endDate:       '2022년 5월 12일 10:18',
-  returnDate:    '2022년 5월 12일 10:49',
+  endDate:       DEMO_CONTRACT_END_KO,
+  returnDate:    DEMO_RETURN_CONFIRM_KO,
   handoverFuel:  75,
   status:        'returned',
 };

@@ -1,10 +1,10 @@
 import StaffBottomNav from '../components/StaffBottomNav';
-import StaffContractActionSection from '../components/StaffContractActionSection';
+import StaffContractCenter from '../components/StaffContractCenter';
 import { StaffDashboardTabContent } from './HomePage';
 
 const TAB_TITLES = {
   home: '배차 관리 대시보드',
-  contract: '계약 관리 현황',
+  contract: '계약 관리 센터',
   alarm: '알림 센터',
   my: '내 정보',
 };
@@ -112,7 +112,7 @@ export default function StaffShellPage({ navigate, staffTab }) {
           {staffTab === 'home' && <StaffDashboardTabContent navigate={navigate} />}
           {staffTab === 'contract' && (
             <div className="px-3 pt-3 pb-4 space-y-3">
-              <StaffContractActionSection />
+              <StaffContractCenter />
             </div>
           )}
           {staffTab === 'alarm' && <StaffAlarmTabPlaceholder />}

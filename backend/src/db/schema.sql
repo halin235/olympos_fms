@@ -24,7 +24,7 @@ CREATE TABLE vehicles (
 -- ============================================================
 CREATE TABLE contracts (
   id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  contract_number   VARCHAR(30)  NOT NULL UNIQUE, -- 연번 R220511630002
+  contract_number   VARCHAR(30)  NOT NULL UNIQUE, -- 연번 예: R260502630002 (데모)
   contract_type     VARCHAR(20)  NOT NULL CHECK (contract_type IN ('insurance','general')),
   vehicle_id        UUID         NOT NULL REFERENCES vehicles(id),
   employee_name     VARCHAR(50)  NOT NULL,

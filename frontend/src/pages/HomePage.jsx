@@ -9,36 +9,45 @@
 
 import { useMemo, useState } from 'react';
 import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
+import { DEMO_DATE } from '../constants/demoTimeline';
 
 // ─────────────────────────────────────────────────────────────
 // Mock 데이터
 // ─────────────────────────────────────────────────────────────
 const KPI = {
-  unreturned:  3,   // 미반납 차량 (빨간)
-  fuelDeficit: 5,   // 연료 부족 정산 (주황)
-  todayReturn: 12,  // 오늘 반납 예정 (파란)
+  unreturned:  1,   // 미반납 차량 (스파크)
+  fuelDeficit: 1,   // 연료 부족 정산 (쏘나타)
+  todayReturn: 2,   // 오늘 반납 예정 (SM6 · 쏘나타, 26.05.03)
 };
 
-const VEHICLE_STATS = { waiting: 3, repair: 0, staff: 0, total: 3, rotationPct: 40 };
+const VEHICLE_STATS = { waiting: 2, repair: 0, staff: 0, total: 5, rotationPct: 52 };
 
 const MONTHLY_STATS = [
-  { label: '이번 달 총 배차',  value: '14건',       color: 'text-olympos-blue' },
-  { label: '정산 완료',        value: '11건',       color: 'text-green-600'   },
-  { label: '정산 대기',        value: '2건',        color: 'text-yellow-600'  },
-  { label: '이의 제기',        value: '1건',        color: 'text-red-500'     },
-  { label: '총 정산 금액',     value: '₩214,600',   color: 'text-gray-900'    },
-  { label: '미처리 건수',      value: '3건',        color: 'text-orange-500'  },
+  { label: '이번 달 총 배차',  value: '5건',       color: 'text-olympos-blue' },
+  { label: '정산 완료',        value: '1건',       color: 'text-green-600'   },
+  { label: '정산 대기',        value: '1건',        color: 'text-yellow-600'  },
+  { label: '이의 제기',        value: '0건',        color: 'text-gray-500'     },
+  { label: '총 정산 금액',     value: '₩182,400',   color: 'text-gray-900'    },
+  { label: '미처리 건수',      value: '1건',        color: 'text-orange-500'  },
 ];
 
 // ─────────────────────────────────────────────────────────────
 // 필터 함수
 // ─────────────────────────────────────────────────────────────
 function filterDeployments(list, filter) {
-  if (filter === '전체')     return list;
-  if (filter === '운행중')   return list.filter((d) => d.contractStatus === 'active');
-  if (filter === '반납완료') return list.filter((d) => d.contractStatus === 'returned');
-  if (filter === '정산대기') return list.filter((d) =>
-    d.settlementStatus === 'pending' || d.settlementStatus === 'pending_review');
+  if (filter === '전체') return list;
+  if (filter === '운행중') return list.filter((d) => d.contractStatus === 'active');
+  if (filter === '반납완료') {
+    return list.filter(
+      (d) =>
+        d.contractStatus === 'returned' &&
+        d.settlementStatus !== 'pending' &&
+        d.settlementStatus !== 'pending_review',
+    );
+  }
+  if (filter === '정산대기') {
+    return list.filter((d) => d.settlementStatus === 'pending' || d.settlementStatus === 'pending_review');
+  }
   return list;
 }
 
@@ -166,7 +175,12 @@ function DeploymentSection({ onDetailClick }) {
   const counts = {
     전체:    ALL_DEPLOYMENTS.length,
     운행중:  ALL_DEPLOYMENTS.filter((d) => d.contractStatus === 'active').length,
-    반납완료: ALL_DEPLOYMENTS.filter((d) => d.contractStatus === 'returned').length,
+    반납완료: ALL_DEPLOYMENTS.filter(
+      (d) =>
+        d.contractStatus === 'returned' &&
+        d.settlementStatus !== 'pending' &&
+        d.settlementStatus !== 'pending_review',
+    ).length,
     정산대기: ALL_DEPLOYMENTS.filter((d) =>
       d.settlementStatus === 'pending' || d.settlementStatus === 'pending_review').length,
   };
@@ -300,6 +314,12 @@ function DeploymentItem({ data, onClick }) {
           <span className={`badge text-[9px] px-1.5 py-0.5 ${statusBadge.cls}`}>
             {statusBadge.label}
           </span>
+          {contractStatus === 'returned' &&
+            (settlementStatus === 'pending' || settlementStatus === 'pending_review') && (
+            <span className="text-[9px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-1.5 py-0">
+              정산 대기
+            </span>
+          )}
           {contractStatus === 'active' && overdueReturn && (
             <span className="text-[9px] font-bold text-red-600 bg-red-50 border border-red-200 rounded-full px-1.5 py-0">
               미반납
@@ -399,7 +419,7 @@ function MonthlyStatsCard() {
         <span className="w-1 h-4 rounded-full bg-olympos-blue inline-block" />
         <h3 className="text-xs font-bold text-gray-900">5월 통계</h3>
         <span className="ml-auto text-[9px] text-gray-400 bg-gray-50 rounded-full px-2 py-0.5 border border-gray-100">
-          2026.05 기준
+          {DEMO_DATE.slice(0, 7)} 기준
         </span>
       </div>
       <div className="grid grid-cols-3 gap-1.5">
@@ -425,7 +445,7 @@ export function StaffDashboardTabContent({ navigate }) {
       <div className="relative bg-gradient-to-r from-[#1B4FBF] to-[#0F2B6B] overflow-hidden">
         <div className="relative px-4 pt-2.5 pb-3 text-white flex items-center justify-between">
           <div>
-            <p className="text-[10px] text-blue-300 font-medium">OLYMPOS FMS · 2022.05.12 (목)</p>
+            <p className="text-[10px] text-blue-300 font-medium">OLYMPOS FMS · {DEMO_DATE} (일)</p>
             <p className="text-sm font-bold mt-0.5 tracking-tight">실시간 운영 요약</p>
           </div>
           <div className="text-right">
@@ -442,26 +462,7 @@ export function StaffDashboardTabContent({ navigate }) {
         <VehicleStatusCard />
         <MonthlyStatsCard />
 
-        <button
-          type="button"
-          onClick={() => navigate?.('contract')}
-          className="w-full text-left bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center gap-3
-                     hover:border-olympos-blue/40 hover:shadow-md active:scale-[0.99] transition-all duration-200 ease-out"
-        >
-          <div className="w-10 h-10 rounded-xl bg-olympos-blue-lt flex items-center justify-center flex-shrink-0 border border-blue-100">
-            <svg className="w-5 h-5 text-olympos-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-900">고객 계약 요청</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">링크 발송 · 리마인드 · 미리보기 · QR</p>
-          </div>
-          <span className="text-xs font-bold text-olympos-blue flex-shrink-0">열기 →</span>
-        </button>
-
-        <div className="pt-2">
+        <div className="mt-4 pt-1">
           <div className="flex items-center gap-2 mb-3">
             <div className="flex-1 h-px bg-gray-200" />
             <span className="text-xs text-gray-400 font-medium">개발 도구</span>

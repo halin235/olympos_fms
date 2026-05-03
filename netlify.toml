@@ -1,0 +1,9 @@
+# Netlify — 저장소 루트 연결 시 (Base directory 를 비우고 이 파일 사용)
+[build]
+  command = "npm install --prefix frontend && npm run build --prefix frontend"
+  publish = "frontend/build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

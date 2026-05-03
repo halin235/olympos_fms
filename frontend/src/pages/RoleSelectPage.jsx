@@ -71,7 +71,7 @@ export default function RoleSelectPage({ navigate }) {
             }
             iconBg="bg-gradient-to-br from-violet-500 to-purple-600"
             title="배차 고객용 모드"
-            subtitle="내 배차·정산 확인 및 영수증 첨부"
+            subtitle="송하린 데모 · 내 배차·정산 확인 및 영수증 첨부"
             tags={['내 정산 금액', '주유 영수증 첨부', '계약서 확인']}
           />
         </div>
