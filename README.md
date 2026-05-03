@@ -57,42 +57,45 @@ npm run build
 
 앱 소스는 **`frontend/`** 디렉터리에 있습니다. 프레임워크는 **Create React App** (`react-scripts`)입니다 (Vite 아님).
 
-### Vercel
+### Vercel (권장)
 
-저장소 **루트에 `vercel.json`**이 있어, 대시보드에서 **Root Directory를 `./`(저장소 루트)** 로 두어도 `frontend/`만 빌드·배포되도록 설정되어 있습니다. Deploy 버튼이 비활성화되던 경우, 이 파일 저장 후 다시 Import 하거나 설정을 저장해 보세요.
+**원인:** 저장소 루트의 `vercel.json`에 `cd frontend && …` 가 있으면, 대시보드에서 **Root Directory**를 `frontend`로 두는 순간 작업 디렉터리가 이미 `frontend/` 라 **`frontend` 하위 폴더가 없어** `cd: frontend: No such file or directory` 가 납니다.
 
-| 설정 항목 | Root = `./`(루트) + 루트 `vercel.json` 사용 시 | Root = `frontend` 로 바꿀 때 |
-|-----------|-----------------------------------------------|------------------------------|
-| **Root Directory** | `.` 또는 비워 둠과 동일 | `frontend` |
-| **Install Command** | *(비워 두면)* `vercel.json`의 `cd frontend && npm ci` | `npm ci` 또는 `npm install` |
-| **Build Command** | *(비워 두면)* `cd frontend && npm run build` | `npm run build` |
-| **Output Directory** | *(비워 두면)* `frontend/build` | `build` |
-| **Framework Preset** | **Create React App** 권장 | **Create React App** (자동 감지되는 경우 많음) |
+이 저장소는 **저장소 루트의 `vercel.json`을 제거**하고 **`frontend/vercel.json`만** 사용합니다.
 
-**Root Directory를 `./frontend`로 바꿀 때:** `frontend/package.json`의 스크립트는 이미 `"build": "react-scripts build"`이므로 **별도 수정할 필요 없습니다.** 빌드 산출물은 항상 해당 패키지 기준 **`build/`** 폴더입니다.
+**Settings → Build & Deployment**
 
-**루트 `package.json`:** 편의용으로 `"build": "cd frontend && npm run build"`가 있습니다. Vercel에서 Root를 루트로 둘 때는 `vercel.json`이 우선하고, Root를 `frontend`로 두면 **프로젝트의 `package.json`은 `frontend/package.json`만** 쓰이므로 루트 스크립트는 배포에 필수는 아닙니다.
+| 항목 | 권장 값 |
+|------|---------|
+| **Root Directory** | `frontend` |
+| **Framework Preset** | Create React App |
+| **Install Command** | Override를 **끄고 비워 두기** (기본 `npm install`). 또는 명시 시 **`npm install`** (`npm ci`는 lockfile 불일치 시 실패할 수 있음) |
+| **Build Command** | 비워 두기 → 기본 **`npm run build`** |
+| **Output Directory** | 비워 두기 → CRA 기본 **`build`** |
 
-SPA 라우팅 확장용 **`rewrites`**는 루트 `vercel.json`에 포함되어 있습니다. Root Directory를 `frontend`만 쓰는 프로젝트로 나중에 분리하면 `frontend/vercel.json`의 동일 설정을 참고하면 됩니다.
+Override를 켠 경우에도 **`cd frontend`는 넣지 마세요.**
 
-#### (선택) `experimentalServices` — 멀티 서비스 프리뷰
+선택: Root Directory를 저장소 루트(`.`)로 두려면 루트에 `vercel.json`을 만들고 `npm install --prefix ./frontend`, `npm run build --prefix ./frontend`, Output `frontend/build` 로 두세요. README 하단 접기 블록 예시를 참고합니다.
 
-Vercel 대시보드에서 프로젝트 **Framework를 Services**로 쓰는 멀티 서비스 구성을 쓸 경우, 공식 문서 형태에 가깝게는 다음처럼 **`experimentalServices`**로 웹 엔트리를 `frontend`에 둘 수 있습니다. *(실험 기능이며, 기존 `builds` 설정과는 함께 쓸 수 없습니다.)*
+<details>
+<summary>루트 배포용 vercel.json 예시 (Root Directory = `.` 일 때만)</summary>
 
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "experimentalServices": {
-    "web": {
-      "entrypoint": "frontend",
-      "routePrefix": "/",
-      "framework": "create-react-app"
-    }
-  }
+  "framework": "create-react-app",
+  "installCommand": "npm install --prefix ./frontend",
+  "buildCommand": "npm run build --prefix ./frontend",
+  "outputDirectory": "frontend/build",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
-프론트만 우선 배포할 때는 위 방식보다 **이 저장소에 포함된 루트 `vercel.json`(install/build/output 지정)** 방식이 단순하고 안정적인 경우가 많습니다.
+</details>
+
+#### (선택) `experimentalServices`
+
+멀티 서비스(Services 프레임워크)를 쓸 때만 공식 문서에 따라 `experimentalServices`를 검토합니다. 일반적인 CRA 단일 앱 배포에는 **Root Directory = `frontend`** 와 위 표만으로 충분합니다.
 
 ### Netlify
 
@@ -116,12 +119,11 @@ olympos_fms/
 ├── frontend/          # React 앱 (진입점)
 │   ├── src/
 │   ├── public/
-│   ├── package.json
-│   ├── vercel.json    # Root Directory=frontend 배포 시 SPA rewrites 등
+│   ├── package-lock.json
+│   ├── vercel.json    # SPA rewrites · CRA (Root Directory = frontend)
 │   └── netlify.toml
 ├── backend/           # API (별도 호스팅 시 연동)
 ├── package.json       # 루트 편의 스크립트 (build/start)
-├── vercel.json        # 루트 배포 시 frontend 빌드 지정
 └── README.md
 ```
 
