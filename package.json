@@ -1,0 +1,12 @@
+{
+  "name": "olympos-fms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OLYMPOS FMS — 스마트 배차·정산 데모 (모노레포 루트 스크립트)",
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "start": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "cd frontend && npm test -- --watchAll=false"
+  }
+}

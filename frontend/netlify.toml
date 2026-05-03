@@ -1,0 +1,12 @@
+# Netlify: Site settings → Base directory을 비워두고 저장소 루트 연결 시,
+# UI에서 "Base directory"를 `frontend`로 지정하거나, 이 파일을 frontend 폴더에 두고 프로젝트 루트를 frontend로 설정하세요.
+
+[build]
+  command = "npm run build"
+  publish = "build"
+
+# 클라이언트 라우팅 확장 대비 (향후 React Router 등 도입 시)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
