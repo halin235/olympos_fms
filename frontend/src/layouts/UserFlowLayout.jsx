@@ -5,8 +5,11 @@ import UserBottomNav from '../components/UserBottomNav';
  */
 export default function UserFlowLayout({ navigate, navActive, children }) {
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-gray-50 max-w-[430px] mx-auto">
-      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">{children}</div>
+    <div className="flex min-h-screen flex-col bg-gray-50 max-w-[430px] mx-auto">
+      {/* 단일 세로 스크롤 — 자식에 overflow-hidden 두지 않음 (본문 잘림 방지) */}
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]">
+        {children}
+      </div>
       <UserBottomNav navigate={navigate} active={navActive} />
     </div>
   );

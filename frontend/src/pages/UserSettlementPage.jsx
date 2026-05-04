@@ -55,7 +55,7 @@ export default function UserSettlementPage({ navigate }) {
   const isConfirmed     = settlement?.status === 'confirmed' || showDone;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-gray-50">
+    <div className="flex min-h-full flex-col bg-gray-50">
       {/* 헤더 */}
       <header className="sticky top-0 z-10 shrink-0 bg-white border-b border-gray-100 flex items-center px-4 py-3 gap-3 shadow-sm">
         <button onClick={() => navigate('home')}
@@ -68,7 +68,7 @@ export default function UserSettlementPage({ navigate }) {
         <div className="w-8" />
       </header>
 
-      <main className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain">
+      <main className="flex flex-col pb-1">
         {/* 히어로 배너 */}
         <div className="bg-olympos-navy relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-olympos-blue/60 to-olympos-navy" />

@@ -76,7 +76,7 @@ export default function ContractDetailPage({ navigate }) {
   }, [canSubmit]);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-[#F5F6F8]">
+    <div className="flex min-h-full flex-col bg-[#F5F6F8]">
       <header className="sticky top-0 z-20 shrink-0 bg-white border-b border-gray-200 flex items-center px-4 py-3 gap-3 shadow-sm">
         <button
           type="button"
@@ -91,8 +91,8 @@ export default function ContractDetailPage({ navigate }) {
         <div className="w-8" />
       </header>
 
-      <div className="flex flex-col flex-1 min-h-0">
-        <main className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain pb-2">
+      <div className="flex flex-col pb-2">
+        <main className="flex flex-col">
           {/* 미니 히어로 */}
           <div className="relative overflow-hidden bg-olympos-navy">
             <div className="absolute inset-0 opacity-90 bg-gradient-to-br from-olympos-blue to-olympos-navy" />

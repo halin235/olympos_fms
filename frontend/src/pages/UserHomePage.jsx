@@ -22,7 +22,7 @@ const SUMMARY = {
 
 export default function UserHomePage({ navigate, userTab = 'home' }) {
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-gray-50">
+    <div className="flex min-h-full flex-col bg-gray-50">
       {/* ── 상단 헤더 ── */}
       <header className="shrink-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
@@ -58,23 +58,24 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 overflow-y-auto">
+      <main className="flex flex-col">
         {userTab === 'home' && (
           <>
-        {/* ── 인사 배너 ── */}
-        <div className="relative bg-olympos-navy overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-olympos-blue/60 to-olympos-navy" />
-          <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5" />
-          <div className="relative px-5 py-6 text-white">
+        {/* ── 인사 배너 + 본문 카드 — gap으로 겹침 방지 (-mt 오버랩 제거) ── */}
+        <div className="flex flex-col gap-4">
+        <section className="relative z-0 shrink-0 bg-olympos-navy overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-olympos-blue/60 to-olympos-navy pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none" aria-hidden />
+          <div className="relative px-5 pt-6 pb-7 text-white">
             <p className="text-sm text-blue-200 font-medium">안녕하세요,</p>
             <h2 className="text-xl font-black mt-0.5">
               {MOCK_RENTAL.customerName} 님 <span className="font-normal">👋</span>
             </h2>
             <p className="text-xs text-blue-200 mt-1.5">올림포스를 이용해 주셔서 감사합니다</p>
           </div>
-        </div>
+        </section>
 
-        <div className="px-4 -mt-3 space-y-3 pb-6">
+        <div className="relative z-[1] px-4 space-y-3 pb-6 isolate">
 
           {/* ── Task 1: 상태 요약 메시지 카드 ── */}
           <StatusSummaryCard
@@ -208,6 +209,7 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
             </div>
           </div>
         </div>
+        </div>
           </>
         )}
 
@@ -248,7 +250,7 @@ function UserMyTabPlaceholder() {
 function StatusSummaryCard({ name, pendingCount, totalAmount, onDetailClick }) {
   const amt = Number(totalAmount).toLocaleString('ko-KR');
   return (
-    <div className="bg-white rounded-2xl shadow-md shadow-blue-50 border border-blue-100 overflow-hidden">
+    <div className="relative z-[1] bg-white rounded-2xl shadow-md shadow-blue-50 border border-blue-100 overflow-hidden">
       <div className="h-1 bg-gradient-to-r from-olympos-blue via-blue-400 to-blue-300" />
       <div className="px-4 py-4 flex items-start gap-3">
         {/* 아이콘 */}

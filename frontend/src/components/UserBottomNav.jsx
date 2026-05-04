@@ -20,7 +20,7 @@ export default function UserBottomNav({ navigate, active = 'home' }) {
   ];
 
   return (
-    <nav className="sticky bottom-0 z-20 shrink-0 bg-white border-t border-gray-100 flex shadow-[0_-1px_8px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom,0px)]">
+    <nav className="z-20 shrink-0 bg-white border-t border-gray-100 flex shadow-[0_-1px_8px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom,0px)]">
       {tabs.map((t) => {
         const isActive = active === t.id;
         return (

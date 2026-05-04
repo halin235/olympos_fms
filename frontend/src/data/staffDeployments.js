@@ -71,7 +71,7 @@ export const ALL_DEPLOYMENTS = [
   },
   {
     id: 'c004',
-    employee: '직원1',
+    employee: '직원2',
     contractNo: 'R260501630004',
     contractStatus: 'returned',
     settlementStatus: 'confirmed',
