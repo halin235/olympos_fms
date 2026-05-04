@@ -58,19 +58,33 @@ npm run build
 
 ## 배포
 
-### Vercel (저장소 루트 연결)
+### Vercel
 
-루트의 `vercel.json`이 `frontend`를 설치·빌드하고 `frontend/build`를 게시합니다.
+이 저장소는 **`frontend/`** 아래에 CRA 앱이 있습니다. 대시보드의 **Root Directory**와 **Install Command**가 서로 맞아야 합니다.
+
+#### A. Root Directory = 비움 (저장소 루트, 권장과 동일)
+
+`/` 기준으로 빌드합니다. **`cd frontend`** 를 넣지 마세요.
 
 1. [Vercel](https://vercel.com)에서 GitHub 저장소 Import  
-2. Framework Preset은 자동 또는 **Other**  
-3. 설정이 자동으로 채워지지 않으면:  
-   - **Install Command:** `npm install --prefix frontend`  
+2. **Root Directory:** 비워 두기 (또는 `./`)  
+3. 루트 `vercel.json`이 다음을 유도합니다:  
+   - **Install Command:** `npm ci --prefix frontend`  
    - **Build Command:** `npm run build --prefix frontend`  
    - **Output Directory:** `frontend/build`  
-4. SPA 라우팅: 루트 `vercel.json`의 `rewrites`로 모든 경로 → `index.html`  
+4. SPA: 루트 `vercel.json`의 `rewrites`  
 
-> **Root Directory**를 `frontend`로만 두는 경우에는 `frontend/vercel.json`만 사용해도 됩니다.
+대시보드에 예전 값 `cd frontend && npm ci`가 남아 있으면 **삭제**하거나 위와 같이 고치세요. Root가 `/`일 때 `cd frontend`는 맞지만, **Root Directory를 이미 `frontend`로 둔 상태**에서 같은 명령을 쓰면 `frontend` 폴더가 없어 실패합니다.
+
+#### B. Root Directory = `frontend`
+
+프로젝트 루트가 `frontend/`인 경우 **`cd frontend` 없이** 설치합니다.
+
+- **Install Command:** `npm ci`  
+- **Build Command:** `npm run build`  
+- **Output Directory:** `build`  
+
+이 경우 `frontend/vercel.json`의 설정을 따릅니다.
 
 ### Netlify
 

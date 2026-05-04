@@ -10,17 +10,21 @@
 import { useMemo, useState } from 'react';
 import { EvLightningIcon } from '../components/EvLightningIcon';
 import ActiveNotReturnedBadge from '../components/ActiveNotReturnedBadge';
-import { ALL_DEPLOYMENTS } from '../data/staffDeployments';
+import {
+  ALL_DEPLOYMENTS,
+  isDeploymentNotReturned,
+  isDeploymentOverdueReturn,
+} from '../data/staffDeployments';
 import { DEMO_DATE } from '../constants/demoTimeline';
-import { formatBranchStatusChip } from '../utils/formatBranchStatusChip';
+import DeploymentBranchChip from '../components/DeploymentBranchChip';
+import DeploymentStatusChip from '../components/DeploymentStatusChip';
 
 // ─────────────────────────────────────────────────────────────
 // Mock 데이터
 // ─────────────────────────────────────────────────────────────
+/** KPI 중 데모 고정값만 유지 (미반납·연료부족은 배차 데이터에서 산출) */
 const KPI = {
-  unreturned:  1,   // 미반납 차량 (연체 플래그 스파크 — 긴급 칩 연동)
-  fuelDeficit: 1,   // 연료 부족 정산 (쏘나타)
-  todayReturn: 2,   // 오늘 반납 예정 (테슬라 모델 3 · 쏘나타, 26.05.03)
+  todayReturn: 2,   // 오늘 반납 예정 (데모 시나리오 고정)
 };
 
 const VEHICLE_STATS = { waiting: 2, repair: 0, staff: 0, total: 5, rotationPct: 52 };
@@ -54,10 +58,10 @@ function filterDeployments(list, filter) {
   return list;
 }
 
-/** 긴급도 점수: 미반납(active+연체) > 연료 부족 > 정산 대기 */
+/** 긴급도 점수: 연체 미반납 > 연료 부족 > 정산 대기 */
 function urgencyScore(d) {
   let s = 0;
-  if (d.contractStatus === 'active' && d.overdueReturn) s += 300;
+  if (isDeploymentOverdueReturn(d)) s += 300;
   if (d.fuelPct < 30) s += 200;
   else if (d.fuelPct < 60) s += 70;
   if (d.settlementStatus === 'pending_review') s += 160;
@@ -70,8 +74,8 @@ function urgencyScore(d) {
 
 function applyUrgencyChip(list, chip) {
   if (chip == null) return list;
-  if (chip === 'overdue') {
-    return list.filter((d) => d.contractStatus === 'active' && d.overdueReturn);
+  if (chip === 'not_returned') {
+    return list.filter(isDeploymentNotReturned);
   }
   if (chip === 'fuel_low') return list.filter((d) => d.fuelPct < 30);
   if (chip === 'settlement_pending') {
@@ -96,9 +100,13 @@ function sortDeployments(list, sortMode) {
 // Task 1: KPI 요약 카드 행
 // ─────────────────────────────────────────────────────────────
 function KpiRow() {
+  const unreturnedCount = ALL_DEPLOYMENTS.filter(isDeploymentNotReturned).length;
+  const fuelDeficitCount = ALL_DEPLOYMENTS.filter(
+    (d) => isDeploymentNotReturned(d) && d.fuelPct < 30,
+  ).length;
   const cards = [
-    { label: '미반납 차량',    value: KPI.unreturned,  unit: '건', bg: 'bg-red-50',    border: 'border-red-200',    num: 'text-red-600',    icon: RedCarIcon    },
-    { label: '연료부족 정산',  value: KPI.fuelDeficit, unit: '건', bg: 'bg-orange-50', border: 'border-orange-200', num: 'text-orange-600', icon: FuelAlertIcon  },
+    { label: '미반납 차량',    value: unreturnedCount,  unit: '건', bg: 'bg-red-50',    border: 'border-red-200',    num: 'text-red-600',    icon: RedCarIcon    },
+    { label: '연료부족 정산',  value: fuelDeficitCount, unit: '건', bg: 'bg-orange-50', border: 'border-orange-200', num: 'text-orange-600', icon: FuelAlertIcon  },
     { label: '오늘 반납예정',  value: KPI.todayReturn, unit: '건', bg: 'bg-blue-50',   border: 'border-blue-200',   num: 'text-olympos-blue', icon: CalendarIcon },
   ];
   return (
@@ -155,7 +163,7 @@ function CalendarIcon() {
 const FILTER_TABS = ['전체', '운행중', '반납완료', '정산대기'];
 
 const URGENCY_CHIPS = [
-  { id: 'overdue', label: '미반납' },
+  { id: 'not_returned', label: '미반납' },
   { id: 'fuel_low', label: '연료 부족' },
   { id: 'settlement_pending', label: '정산 대기' },
 ];
@@ -292,7 +300,6 @@ function DeploymentItem({ data, onClick }) {
   } = data;
 
   const isEv = powertrain === 'ev';
-  const branchChipText = formatBranchStatusChip(contractStatus, returnBranchName);
 
   // 연료 / 배터리 SOC 색상·라벨
   const fuelColor = fuelPct >= 60 ? '#10B981' : fuelPct >= 30 ? '#F59E0B' : '#EF4444';
@@ -323,24 +330,18 @@ function DeploymentItem({ data, onClick }) {
           {plateNumber}
         </div>
 
-        {/* 반납 지점·계약 상태 통합 칩 + 부가 알림 */}
+        {/* 상태 칩 + 거점 칩 (분리) + 부가 알림 */}
         <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
-          <div className="flex flex-wrap items-center gap-1 min-w-0">
-            {branchChipText ? (
-              <span
-                className="inline-flex max-w-full items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[9px] font-bold text-slate-800 tracking-tight break-words leading-snug"
-                title={branchChipText}
-              >
-                {branchChipText}
-              </span>
-            ) : null}
-            {contractStatus === 'active' ? <ActiveNotReturnedBadge /> : null}
-            {contractStatus === 'returned' &&
-              (settlementStatus === 'pending' || settlementStatus === 'pending_review') && (
-              <span className="text-[9px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-1.5 py-0.5">
-                정산 대기
-              </span>
-            )}
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
+            <DeploymentStatusChip
+              contractStatus={contractStatus}
+              settlementStatus={settlementStatus}
+            />
+            <DeploymentBranchChip
+              contractStatus={contractStatus}
+              branchName={returnBranchName}
+            />
+            {isDeploymentNotReturned(data) ? <ActiveNotReturnedBadge /> : null}
           </div>
           {isReviewPending ? (
             <span className="flex-shrink-0 flex items-center gap-1 bg-orange-500 text-white

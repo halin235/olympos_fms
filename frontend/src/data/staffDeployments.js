@@ -108,3 +108,16 @@ export const ALL_DEPLOYMENTS = [
     returnBranchName: '서초점',
   },
 ];
+
+/**
+ * 미반납(Single Source of Truth): 반납 처리 전 = 계약이 아직 운행중(active).
+ * — 리스트 「미반납」 뱃지, 미반납 칩 필터, KPI 「미반납 차량」 건수와 동일 기준.
+ */
+export function isDeploymentNotReturned(d) {
+  return d?.contractStatus === 'active';
+}
+
+/** 연체 미반납: 긴급도 정렬·알림 등에만 사용 (미반납의 부분집합) */
+export function isDeploymentOverdueReturn(d) {
+  return d?.contractStatus === 'active' && Boolean(d?.overdueReturn);
+}

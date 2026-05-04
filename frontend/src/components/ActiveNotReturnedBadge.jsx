@@ -2,7 +2,7 @@
 export default function ActiveNotReturnedBadge({ className = '' }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md border border-red-200 bg-red-50 px-1.5 py-0.5 text-[9px] font-bold text-red-700 leading-snug whitespace-nowrap ${className}`}
+      className={`inline-flex items-center rounded-xl border border-red-200 bg-red-50 px-1.5 py-0.5 text-[9px] font-bold text-red-700 leading-snug whitespace-nowrap ${className}`}
     >
       미반납
     </span>
