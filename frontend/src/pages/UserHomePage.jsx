@@ -75,7 +75,7 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
           </div>
         </section>
 
-        <div className="relative z-[1] px-4 space-y-3 pb-6 isolate">
+        <div className="relative z-[1] px-4 space-y-3 pb-10 isolate">
 
           {/* ── Task 1: 상태 요약 메시지 카드 ── */}
           <StatusSummaryCard
