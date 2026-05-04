@@ -7,21 +7,12 @@
  */
 import {
   DEMO_DISPLAY_ANCHOR_DATE_KO,
-  DEMO_HOME_END_DATE_KO,
-  DEMO_HOME_START_DATE_KO,
 } from '../constants/demoTimeline';
-import { DEMO_PLATE_SPARK } from '../constants/demoVehiclePlates';
+import { DEMO_USER_RENTAL } from '../constants/demoUserRental';
+import UserNotificationCenter from '../components/UserNotificationCenter';
+import VehicleBrandAvatar from '../components/VehicleBrandAvatar';
 
-const MOCK_RENTAL = {
-  customerName: '송하린',
-  vehicle:      '스파크',
-  plate:        DEMO_PLATE_SPARK,
-  startDate:    DEMO_HOME_START_DATE_KO,
-  endDate:      DEMO_HOME_END_DATE_KO,
-  status:       'returned',
-  contractType: '보험대차',
-  days:         1,
-};
+const MOCK_RENTAL = DEMO_USER_RENTAL;
 
 // 데모용 요약 상태 데이터 (상단 카드 · 정산 카드 공통)
 const SUMMARY = {
@@ -103,14 +94,11 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-olympos-blue-lt flex items-center justify-center flex-shrink-0">
-                  <svg className="w-8 h-8 text-olympos-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                      d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 1m8-11h1l3 3v4h-1" />
-                  </svg>
-                </div>
+                <VehicleBrandAvatar
+                  vehicleName={MOCK_RENTAL.vehicle}
+                  powertrain={MOCK_RENTAL.powertrain ?? 'ice'}
+                  title={`${MOCK_RENTAL.vehicle} (${MOCK_RENTAL.plate})`}
+                />
                 <div className="min-w-0 flex-1">
                   <p className="text-xl font-black text-gray-900 tracking-tight leading-tight">
                     {MOCK_RENTAL.vehicle}
@@ -223,7 +211,7 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
           </>
         )}
 
-        {userTab === 'alarm' && <UserAlarmTabPlaceholder />}
+        {userTab === 'alarm' && <UserNotificationCenter />}
         {userTab === 'my' && <UserMyTabPlaceholder />}
       </main>
     </div>
@@ -231,27 +219,8 @@ export default function UserHomePage({ navigate, userTab = 'home' }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 알림 / 마이 탭 (플레이스홀더)
+// 마이 탭 (플레이스홀더)
 // ─────────────────────────────────────────────────────────────
-function UserAlarmTabPlaceholder() {
-  return (
-    <div className="px-4 py-10">
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
-        <div className="w-12 h-12 mx-auto rounded-full bg-olympos-blue-lt flex items-center justify-center mb-3 border border-blue-100">
-          <svg className="w-6 h-6 text-olympos-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-        </div>
-        <p className="text-sm font-bold text-gray-900 mb-1">받은 알림이 없습니다</p>
-        <p className="text-xs text-gray-400 leading-relaxed">
-          정산·반납 안내가 도착하면 이곳에서 확인할 수 있습니다.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function UserMyTabPlaceholder() {
   return (
     <div className="px-4 py-10">
